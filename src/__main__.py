@@ -2,6 +2,7 @@ import asyncio
 
 from viam.module.module import Module
 from viam.services.vision import Vision
+
 from .qwen import qwen
 
 

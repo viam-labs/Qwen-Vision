@@ -1,3 +1,4 @@
+import importlib
 from io import BytesIO
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -9,7 +10,6 @@ from viam.proto.app.robot import ComponentConfig
 from viam.utils import dict_to_struct
 
 from src.qwen import qwen as Qwen
-import importlib
 
 qwen_mod = importlib.import_module("src.qwen")
 

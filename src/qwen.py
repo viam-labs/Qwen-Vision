@@ -1,5 +1,3 @@
-from typing import ClassVar, Mapping, Optional, Any, List, cast
-from typing_extensions import Self
 import ast
 import base64
 import ctypes
@@ -7,30 +5,26 @@ import json
 import re
 from io import BytesIO
 from pathlib import Path
-
-from viam.proto.common import PointCloudObject
-from viam.proto.service.vision import Classification, Detection
-from viam.utils import ValueTypes
-
-from viam.module.types import Reconfigurable
-from viam.proto.app.robot import ComponentConfig
-from viam.proto.common import ResourceName
-from viam.resource.base import ResourceBase
-from viam.resource.types import Model, ModelFamily
-
-from viam.services.vision import Vision, CaptureAllResult
-from viam.proto.service.vision import GetPropertiesResponse
-from viam.components.camera import Camera, ViamImage
-from viam.media.utils.pil import viam_to_pil_image
-from viam.media.video import CameraMimeType
-from viam.logging import getLogger
+from typing import Any, ClassVar, List, Mapping, Optional, cast
 
 from huggingface_hub import hf_hub_download
-from llama_cpp import Llama
-from llama_cpp import llama_cpp
+from llama_cpp import Llama, llama_cpp
 from llama_cpp._utils import suppress_stdout_stderr
 from llama_cpp.llama_chat_format import MTMDChatHandler
 from PIL import Image
+from typing_extensions import Self
+from viam.components.camera import Camera, ViamImage
+from viam.logging import getLogger
+from viam.media.utils.pil import viam_to_pil_image
+from viam.media.video import CameraMimeType
+from viam.module.types import Reconfigurable
+from viam.proto.app.robot import ComponentConfig
+from viam.proto.common import PointCloudObject, ResourceName
+from viam.proto.service.vision import Classification, Detection, GetPropertiesResponse
+from viam.resource.base import ResourceBase
+from viam.resource.types import Model, ModelFamily
+from viam.services.vision import CaptureAllResult, Vision
+from viam.utils import ValueTypes
 
 LOGGER = getLogger(__name__)
 
