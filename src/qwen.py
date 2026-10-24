@@ -1,5 +1,3 @@
-from typing import ClassVar, Mapping, Optional, Any, List, cast
-from typing_extensions import Self
 import ast
 import base64
 import ctypes
@@ -7,30 +5,26 @@ import json
 import re
 from io import BytesIO
 from pathlib import Path
-
-from viam.proto.common import PointCloudObject
-from viam.proto.service.vision import Classification, Detection
-from viam.utils import ValueTypes
-
-from viam.module.types import Reconfigurable
-from viam.proto.app.robot import ComponentConfig
-from viam.proto.common import ResourceName
-from viam.resource.base import ResourceBase
-from viam.resource.types import Model, ModelFamily
-
-from viam.services.vision import Vision, CaptureAllResult
-from viam.proto.service.vision import GetPropertiesResponse
-from viam.components.camera import Camera, ViamImage
-from viam.media.utils.pil import viam_to_pil_image
-from viam.media.video import CameraMimeType
-from viam.logging import getLogger
+from typing import Any, ClassVar, List, Mapping, Optional, cast
 
 from huggingface_hub import hf_hub_download
-from llama_cpp import Llama
-from llama_cpp import llama_cpp
+from llama_cpp import Llama, llama_cpp
 from llama_cpp._utils import suppress_stdout_stderr
 from llama_cpp.llama_chat_format import MTMDChatHandler
 from PIL import Image
+from typing_extensions import Self
+from viam.components.camera import Camera, ViamImage
+from viam.logging import getLogger
+from viam.media.utils.pil import viam_to_pil_image
+from viam.media.video import CameraMimeType
+from viam.module.types import Reconfigurable
+from viam.proto.app.robot import ComponentConfig
+from viam.proto.common import PointCloudObject, ResourceName
+from viam.proto.service.vision import Classification, Detection, GetPropertiesResponse
+from viam.resource.base import ResourceBase
+from viam.resource.types import Model, ModelFamily
+from viam.services.vision import CaptureAllResult, Vision
+from viam.utils import ValueTypes
 
 LOGGER = getLogger(__name__)
 
@@ -208,7 +202,8 @@ class qwen(Vision, Reconfigurable):
             raise Exception(f"camera dependency '{camera_name}' not found")
 
         self.classification_prompt = (
-            fields["classification_prompt"].string_value or DEFAULT_CLASSIFICATION_PROMPT
+            fields["classification_prompt"].string_value
+            or DEFAULT_CLASSIFICATION_PROMPT
         )
 
         self.max_new_tokens = DEFAULT_MAX_NEW_TOKENS
@@ -463,7 +458,9 @@ class qwen(Vision, Reconfigurable):
             x_max_n = x2 / BBOX_SCALE
             y_max_n = y2 / BBOX_SCALE
 
-            label = item.get("label") or item.get("class_name") or item.get("name") or ""
+            label = (
+                item.get("label") or item.get("class_name") or item.get("name") or ""
+            )
             if not isinstance(label, str):
                 label = str(label)
 
@@ -550,17 +547,13 @@ class qwen(Vision, Reconfigurable):
                 break
         return names
 
-    def _list_object_names(
-        self, pil_image, query: Optional[str] = None
-    ) -> List[str]:
+    def _list_object_names(self, pil_image, query: Optional[str] = None) -> List[str]:
         """Ask for a comma-separated object list (moondream auto-label style)."""
         if query and str(query).strip():
             prompt = LIST_OBJECTS_QUERY_PROMPT.format(query=str(query).strip())
         else:
             prompt = LIST_OBJECTS_PROMPT
-        answer = self._generate(
-            pil_image, prompt, max_new_tokens=128, greedy=True
-        )
+        answer = self._generate(pil_image, prompt, max_new_tokens=128, greedy=True)
         return self._parse_name_list(answer)
 
     def _detection_prompt(self, query: Optional[str] = None) -> str:
@@ -586,9 +579,7 @@ class qwen(Vision, Reconfigurable):
         height: int,
     ) -> List[Detection]:
         prompt = self._detection_prompt(categories)
-        text = self._generate(
-            pil_image, prompt, max_new_tokens=max_tokens, greedy=True
-        )
+        text = self._generate(pil_image, prompt, max_new_tokens=max_tokens, greedy=True)
         LOGGER.debug(f"detection raw model output: {text!r}")
         infer_w, infer_h = pil_image.size
         return self._detections_from_response(
@@ -764,9 +755,7 @@ class qwen(Vision, Reconfigurable):
                     )
 
         if return_detections:
-            result.detections = await self.get_detections(
-                result.image, extra=det_extra
-            )
+            result.detections = await self.get_detections(result.image, extra=det_extra)
         return result
 
     async def get_properties(

@@ -1,3 +1,4 @@
+import importlib
 from io import BytesIO
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -9,7 +10,6 @@ from viam.proto.app.robot import ComponentConfig
 from viam.utils import dict_to_struct
 
 from src.qwen import qwen as Qwen
-import importlib
 
 qwen_mod = importlib.import_module("src.qwen")
 
@@ -278,9 +278,7 @@ class TestDetections:
             result = await service.get_detections(
                 make_jpeg_image(), extra={"query": "people"}
             )
-        list_objs.assert_called_once_with(
-            list_objs.call_args[0][0], "people"
-        )
+        list_objs.assert_called_once_with(list_objs.call_args[0][0], "people")
         assert 'categories: "person"' in gen.call_args[0][1]
         assert result[0].class_name == "person"
 
@@ -301,9 +299,7 @@ class TestDetections:
     @pytest.mark.asyncio
     async def test_per_object_fallback_when_combined_empty(self, service):
         with (
-            patch.object(
-                service, "_list_object_names", return_value=["cup", "book"]
-            ),
+            patch.object(service, "_list_object_names", return_value=["cup", "book"]),
             patch.object(
                 service,
                 "_ground_categories",
