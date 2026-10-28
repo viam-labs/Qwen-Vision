@@ -9,7 +9,7 @@ from io import BytesIO
 from pathlib import Path
 
 from viam.proto.common import PointCloudObject
-from viam.proto.service.vision import Classification, Detection
+from viam.proto.service.vision import Classification, Detection, Detection3D
 from viam.utils import ValueTypes
 
 from viam.module.types import Reconfigurable
@@ -710,6 +710,15 @@ class qwen(Vision, Reconfigurable):
             self._prepare_image(image), question, max_new_tokens=max_tokens
         )
         return [Classification(class_name=answer, confidence=1.0)]
+
+    async def get_detections_3d(
+        self,
+        camera_name: str,
+        *,
+        extra: Optional[Mapping[str, Any]] = None,
+        timeout: Optional[float] = None,
+    ) -> List[Detection3D]:
+        return []
 
     async def get_object_point_clouds(
         self,
